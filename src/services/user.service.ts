@@ -1,22 +1,14 @@
 import axios from "axios";
-import cookies from "js-cookie";
 
 import Service from "./service";
 
 class UserService extends Service {
   async me() {
-    const accessToken = cookies.get("accessToken");
-    if (!accessToken) {
-      return;
-    }
-
-    const { data } = await axios.get("/users/me", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+    return await super.checkAccessToken(async () => {
+      // 이렇게 쓰니깐 인증 정보가 필요한건지 아닌건지 모르겠긴 함..
+      const { data } = await axios.get("/users/me");
+      return data;
     });
-
-    return data;
   }
 
   async read(id: number) {
