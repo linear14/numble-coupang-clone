@@ -4,6 +4,14 @@ import { setAuthToken } from "../utils/cookie";
 
 import Service from "./service";
 
+interface User {
+  email: string;
+  password: string;
+  name: string;
+  phoneNumber: string;
+  agreements: SignupAgreements;
+}
+
 type SignupAgreements = {
   privacy: boolean;
   ad:
@@ -14,6 +22,8 @@ type SignupAgreements = {
       }
     | false;
 };
+
+type LoginData = Pick<User, "email" | "password">;
 
 class AuthService extends Service {
   async refresh() {
@@ -31,13 +41,7 @@ class AuthService extends Service {
     setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
   }
 
-  async signup(
-    email: string,
-    password: string,
-    name: string,
-    phoneNumber: string,
-    agreements: SignupAgreements
-  ) {
+  async signup({ email, password, name, phoneNumber, agreements }: User) {
     const { data } = await axios.post("/auth/signup", {
       email,
       password,
@@ -49,7 +53,7 @@ class AuthService extends Service {
     setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
   }
 
-  async login(email: string, password: string) {
+  async login({ email, password }: LoginData) {
     const { data } = await axios.post("/auth/login", { email, password });
 
     setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
