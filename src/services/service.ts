@@ -1,3 +1,4 @@
+import axios from "axios";
 import cookies from "js-cookie";
 
 // 여기에 명시된 메서드는 되도록이면 인스턴스 메서드로 사용할 수 없으면 좋겠고,
@@ -7,18 +8,20 @@ class Service {
     console.log("service created");
   }
 
-  async checkAccessToken(cb: Function) {
+  async withAccessToken(cb: Function) {
     const accessToken = cookies.get("accessToken");
     if (accessToken) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
       return await cb();
     } else {
       return;
     }
   }
 
-  async checkRefreshToken(cb: Function) {
+  async withRefreshToken(cb: Function) {
     const refreshToken = cookies.get("refreshToken");
     if (refreshToken) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${refreshToken}`;
       return await cb();
     } else {
       return;

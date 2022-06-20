@@ -1,5 +1,4 @@
 import axios from "axios";
-import cookies from "js-cookie";
 import { setAuthToken } from "../utils/cookie";
 
 import Service from "./service";
@@ -27,35 +26,19 @@ type LoginData = Pick<User, "email" | "password">;
 
 class AuthService extends Service {
   async refresh() {
-    const refreshToken = cookies.get("refreshToken");
-    if (!refreshToken) {
-      return;
-    }
-
-    const { data } = await axios.post("/auth/refresh", null, {
-      headers: {
-        Authorization: `Bearer ${refreshToken}`,
-      },
+    return await super.withRefreshToken(async () => {
+      const { data } = await axios.post("/auth/refresh");
+      setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
     });
-
-    setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
   }
 
-  async signup({ email, password, name, phoneNumber, agreements }: User) {
-    const { data } = await axios.post("/auth/signup", {
-      email,
-      password,
-      name,
-      phoneNumber,
-      agreements,
-    });
-
+  async signup(user: User) {
+    const { data } = await axios.post("/auth/signup", { ...user });
     setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
   }
 
   async login({ email, password }: LoginData) {
     const { data } = await axios.post("/auth/login", { email, password });
-
     setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
   }
 }
