@@ -14,3 +14,17 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.header {
+  height: 48px;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid lightgray;
+}
+
+.header > div:nth-of-type(2) {
+  display: flex;
+  gap: 16px;
+}

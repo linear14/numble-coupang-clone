@@ -5,6 +5,7 @@ import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import axios from "axios";
 import cookies from "js-cookie";
 import { AuthService } from "../src/services";
+import Layout from "../components/_layout";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_HOST;
 // axios.interceptors.response.use(
@@ -32,7 +33,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </Hydrate>
     </QueryClientProvider>
   );
