@@ -1,3 +1,5 @@
+import { GetServerSideProps } from "next";
+import cookies from "next-cookies";
 import { useRouter } from "next/router";
 import { useCallback, useRef } from "react";
 import { AuthService } from "../../src/services";
@@ -45,3 +47,30 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { accessToken, refreshToken } = cookies(context);
+
+  if (accessToken) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  if (refreshToken) {
+    const { success } = await AuthService.refresh();
+    if (success) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  }
+
+  return { props: {} };
+};
