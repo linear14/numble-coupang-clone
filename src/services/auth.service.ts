@@ -1,5 +1,5 @@
 import axios from "axios";
-import { setAuthToken } from "../utils/cookie";
+import { clearAuthToken, setAuthToken } from "../utils/cookie";
 
 import Service from "./service";
 
@@ -58,6 +58,11 @@ class AuthService extends Service {
     } else {
       return { success: false };
     }
+  }
+
+  async logout() {
+    clearAuthToken();
+    return { success: true };
   }
 }
 

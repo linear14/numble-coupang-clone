@@ -29,6 +29,10 @@ a {
   gap: 16px;
 }
 
+.header > div:nth-of-type(2) div {
+  cursor: pointer;
+}
+
 .header span {
   font-weight: bold;
 }

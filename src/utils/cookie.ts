@@ -14,3 +14,8 @@ export const setAuthToken = ({
     cookies.set("refreshToken", refreshToken, { expires: 7 });
   }
 };
+
+export const clearAuthToken = () => {
+  cookies.remove("accessToken");
+  cookies.remove("refreshToken");
+};

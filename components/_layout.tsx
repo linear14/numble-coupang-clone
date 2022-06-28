@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { UserService } from "../src/services";
+import { AuthService, UserService } from "../src/services";
 
 interface Props {
   children: React.ReactNode;
@@ -9,12 +10,21 @@ interface Props {
 }
 
 const Layout = ({ children, hasSession }: Props) => {
+  const router = useRouter();
+
+  // 실제로도 이렇게 내 정보를 계속 refetch 하는 방식으로 데이터를 관리하는지..?
   const { data: me } = useQuery("me", UserService.me, {
     refetchInterval: 500,
-    enabled: hasSession,
   });
 
-  console.log(me);
+  const handleLogout = useCallback(async () => {
+    const { success } = await AuthService.logout();
+    if (success) {
+      window.location.href = router.asPath;
+    } else {
+      alert("로그아웃 실패");
+    }
+  }, [router]);
 
   return (
     <>
@@ -28,7 +38,7 @@ const Layout = ({ children, hasSession }: Props) => {
               <div>
                 <span>{me?.name}</span>님
               </div>
-              <div>로그아웃</div>
+              <div onClick={handleLogout}>로그아웃</div>
             </>
           ) : (
             <>
