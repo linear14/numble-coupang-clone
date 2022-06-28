@@ -28,18 +28,36 @@ class AuthService extends Service {
   async refresh() {
     return await super.withRefreshToken(async () => {
       const { data } = await axios.post("/auth/refresh");
-      setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
+
+      if (data) {
+        setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
+        return { success: true };
+      } else {
+        return { success: false };
+      }
     });
   }
 
   async signup(user: User) {
     const { data } = await axios.post("/auth/signup", { ...user });
-    setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
+
+    if (data) {
+      setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
+      return { success: true };
+    } else {
+      return { success: false };
+    }
   }
 
   async login({ email, password }: LoginData) {
     const { data } = await axios.post("/auth/login", { email, password });
-    setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
+
+    if (data) {
+      setAuthToken({ accessToken: data.access, refreshToken: data.refresh });
+      return { success: true };
+    } else {
+      return { success: false };
+    }
   }
 }
 
