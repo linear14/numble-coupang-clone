@@ -1,11 +1,11 @@
 import "../styles/globals.css";
-import type { AppProps } from "next/app";
+import type { AppContext, AppProps } from "next/app";
 import { useState } from "react";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import axios from "axios";
-import cookies from "js-cookie";
 import { AuthService } from "../src/services";
 import Layout from "../components/_layout";
+import cookies from "next-cookies";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_HOST;
 // axios.interceptors.response.use(
@@ -33,12 +33,32 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <Layout>
+        <Layout hasSession={pageProps.hasSession}>
           <Component {...pageProps} />
         </Layout>
       </Hydrate>
     </QueryClientProvider>
   );
 }
+
+MyApp.getInitialProps = async ({ Component, ctx }: AppContext) => {
+  let pageProps = {};
+  const { accessToken, refreshToken } = cookies(ctx);
+
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx);
+  }
+
+  if (!accessToken) {
+    if (refreshToken) {
+      const { success } = await AuthService.refresh();
+      pageProps = { ...pageProps, hasSession: success };
+    }
+  } else {
+    pageProps = { ...pageProps, hasSession: true };
+  }
+
+  return { pageProps };
+};
 
 export default MyApp;
